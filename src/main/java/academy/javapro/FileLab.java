@@ -142,9 +142,17 @@ public class FileLab {
         System.out.println("-".repeat(90));
 
         // Display each record using enhanced for loop
-        // TODO: Using enhanced for loop iterate through the data and print each record
-        // TODO: Using String.format for formatting using the specified width %-8s %-12s %-20s %-10s %-8s %-10s %-12s %-8s
-        // TODO: print the header and each record OrderID, Date, CustomerName, ProductID, Quantity, UnitPrice, TotalAmount, Region
+        for (Map<String, String> record : data) {
+            System.out.println(String.format("%-8s %-12s %-20s %-10s %-8s %-10s %-12s %-8s",
+                    record.get("OrderID"),
+                    record.get("Date"),
+                    record.get("CustomerName"),
+                    record.get("ProductID"),
+                    record.get("Quantity"),
+                    record.get("UnitPrice"),
+                    record.get("TotalAmount"),
+                    record.get("Region")));
+        }
 
         // Display count
         System.out.println("-".repeat(90));
@@ -158,23 +166,26 @@ public class FileLab {
     private static List<Map<String, String>> filterQuantityGreaterThan(
             List<Map<String, String>> data, int minQuantity) {
 
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
+        List<Map<String, String>> filteredData = new ArrayList<>();
 
-        // TODO: Using enhanced for loop to iterate through the data
-            // TODO: Using try-catch to handle NumberFormatException
-                // TODO: Create a variable quantity and parse the quantity from the record
-                // Using an if statement with continue for flow control
-                // TODO: If quantity is less than or equal to minQuantity, use continue to skip this record}
+        for (Map<String, String> record : data) {
+            try {
+                // Parse the quantity from the record
+                int quantity = Integer.parseInt(record.get("Quantity"));
+                // If quantity is less than or equal to minQuantity, skip this record
+                if (quantity <= minQuantity) {
+                    continue;
+                }
+                // Add the valid record to the filtered list
+                filteredData.add(record);
+            } catch (NumberFormatException e) {
 
-                // If we get here, the record passed the filter
-                // TODO: Or else add the record to the filteredData list
-            // TODO: Catch NumberFormatException and print an error message
-                // Skip records with invalid quantity values
-                // TODO: Print an error message indicating the invalid record
-                // TODO: Print Invalid quantity format in record: and the OrderID
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+                System.err.println("Invalid quantity format in record: " + record.get("OrderID"));
+                continue;
+            }
+        }
+
+        return filteredData;
     }
 
     /**
@@ -184,29 +195,26 @@ public class FileLab {
     private static List<Map<String, String>> filterUnitPriceGreaterThan(
             List<Map<String, String>> data, double minPrice) {
 
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
+        // Create a filteredData list to store the filtered records
+        List<Map<String, String>> filteredData = new ArrayList<>();
 
-        // Using while loop and iterator
-        // TODO: Create an integer variable i and initialize it to 0
-        // TODO: Use a while loop to iterate through the data using data.size() as the condition
-            // TODO: Create a variable record and get the record at index i
+        int i = 0;
+        while (i < data.size()) {
+            Map<String, String> record = data.get(i);
+            try {
+                // Parse the unit price from the record
+                double unitPrice = Double.parseDouble(record.get("UnitPrice"));
+                // If unitPrice is greater than minPrice, add the record to the filtered list
+                if (unitPrice > minPrice) {
+                    filteredData.add(record);
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid unit price format in record: " + record.get("OrderID"));
+            }
+            i++;
+        }
 
-            // TODO: Using try-catch to handle NumberFormatException
-                // TODO: Create a variable unitPrice and parse the unit price from the record
-
-                // Using nested if statement
-                // TODO: If unitPrice is greater than minPrice, add the record to the filteredData list
-                    // TODO: Add the record to the filteredData list
-
-            // TODO: Catch NumberFormatException and print an error message
-                // Skip records with invalid price values
-                // TODO: Print an error message indicating the invalid record
-                // TODO: Print Invalid unit price format in record: and the OrderID
-
-            // TODO: Increment the counter i
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+        return filteredData;
     }
 
     /**
@@ -216,24 +224,29 @@ public class FileLab {
     private static List<Map<String, String>> filterByRegion(
             List<Map<String, String>> data, String targetRegion) {
 
-        // TODO: Create a filteredData list to store the filtered records
-        // TODO: This list should be of type List<Map<String, String>>
-        // TODO: Use enhanced for loop to iterate through the data using temporary variable record
-            // TODO: Create a variable recordRegion and get the region from the record
-            // TODO: Using an if statement to check for null region, continue if null
+        // Create a filteredData list to store the filtered records
+        List<Map<String, String>> filteredData = new ArrayList<>();
 
+        for (Map<String, String> record : data) {
+            String recordRegion = record.get("Region");
 
-            // Using switch for region comparison
-            // TODO: Or else use switch statement to compare recordRegion with targetRegion
-                // TODO: Using case statements for each region
-                // TODO: If recordRegion matches targetRegion, add the record to filteredData
-                // TODO: Repeat this for all regions
-                // TODO: Add default case to handle unknown regions
-                // TODO: Print unknown region: and the recordRegion
+            // Skip if the region is null
+            if (recordRegion == null) {
+                continue;
+            }
 
-
-
-        // TODO: Return the filteredData list
-        throw new UnsupportedOperationException("Not implemented yet");
+            switch (recordRegion) {
+                case "North", "South", "East", "West" -> {
+                    // If the record's region matches the target region, add it to the filtered list
+                    if (recordRegion.equals(targetRegion)) {
+                        filteredData.add(record);
+                    }
+                }
+                default -> {
+                    System.err.println("Unknown region: " + recordRegion);
+                }
+            }
+        }
+        return filteredData;
     }
 }
